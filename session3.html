@@ -407,6 +407,21 @@ table.audit td button.false-flag{opacity:.55;text-decoration:line-through}
 }
 noscript div{position:fixed;inset:0;background:var(--paper);z-index:99;padding:24px;font-size:20px}
 
+
+/* end-of-session feedback */
+.fbq{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.fbq legend{font:600 18px var(--f-label);padding:0;margin-bottom:6px}
+.fbopts{display:flex;flex-wrap:wrap;gap:6px}
+.fbopts button{flex:1 1 7.5em;min-height:46px;border:2px solid var(--panel-line);background:var(--panel);border-radius:4px;cursor:pointer;font:600 17px var(--f-label);padding:6px 10px}
+.fbopts button:hover{border-color:var(--ink)}
+.fbopts button[aria-pressed="true"]{border-color:var(--navy);background:var(--navy);color:var(--paper)}
+#fbForm{display:flex;flex-direction:column;gap:16px}
+.fbsend{align-self:flex-start;min-height:46px;font-size:18px;padding:0 26px}
+.fbsend:disabled{opacity:.45;cursor:default}
+.fbmsg{margin:0;font-size:16px;color:var(--red)}
+.fbthanks{font:600 22px var(--f-label);color:var(--green);display:flex;flex-direction:column;gap:6px}
+.fbthanks span{font:400 16px var(--f-body);color:var(--muted)}
+
 /* hands-on stations */
 .demo-badge rect{fill:var(--badge)}
 .demo-badge text{font:600 15px var(--f-mono);fill:var(--on-line);letter-spacing:.06em;text-anchor:middle;dominant-baseline:central}
@@ -553,9 +568,9 @@ table.dois a{color:var(--ink);font-family:var(--f-mono);font-size:13.5px;word-br
       <!-- detail B leader -->
       <path class="line leader" d="M232 444 L302 604"/>
       <!-- checked route -->
-      <path class="line navy" d="M72 420 L2520 420 Q2560 420 2560 460 L2560 760 Q2560 800 2520 800 L800 800 Q760 800 760 840 L760 1160 Q760 1200 800 1200 L2540 1200"/>
-      <path d="M2530 1182 L2562 1200 L2530 1218 Z" fill="var(--navy)"/>
-      <text class="minor" x="2420" y="1178">TO THE TUTORIAL</text>
+      <path class="line navy" d="M72 420 L2520 420 Q2560 420 2560 460 L2560 760 Q2560 800 2520 800 L800 800 Q760 800 760 840 L760 1160 Q760 1200 800 1200 L2680 1200"/>
+      <path d="M2670 1182 L2702 1200 L2670 1218 Z" fill="var(--navy)"/>
+      <text class="minor" x="2586" y="1170">TO THE TUTORIAL</text>
       <text class="minor" x="84" y="456">FROM SHEET 1</text>
       <text class="manual" x="1640" y="404" text-anchor="middle">the manual route</text>
       <text class="manual" x="1480" y="784" text-anchor="middle">reading it all yourself</text>
@@ -1303,6 +1318,34 @@ Do not infer that an unstudied condition is a research gap.</pre>
   </div>
 </template>
 
+<template id="tpl-feedback">
+  <div class="story">
+    <figure class="ill short"><svg viewBox="0 0 480 120" role="img" aria-label="A ticket stub: end of the line">
+<rect class="s fp" x="90" y="14" width="300" height="92" rx="6"/>
+<path class="s sm dash" d="M300 14 L300 106"/>
+<text class="mono" x="110" y="40">END OF THE LINE</text>
+<text class="tx" x="110" y="68" style="font-size:22px">How was the journey?</text>
+<text class="mono" x="110" y="92">SESSION 3 · ANONYMOUS</text>
+<g class="a-pulse"><circle cx="345" cy="60" r="22" fill="var(--navy)"/><text x="345" y="67" text-anchor="middle" style="font:700 22px var(--f-label);fill:var(--paper)">3</text></g>
+</svg></figure>
+    <p>End of the line for today. Three quick taps help shape the next session.</p>
+    <p>It's anonymous: no name, email or account is sent, and there's no text box. Only your three answers and the session name are recorded.</p>
+  </div>
+  <div class="frame" data-label="Three taps · anonymous">
+    <form id="fbForm" novalidate>
+      <fieldset class="fbq" data-key="learned"><legend>Did today's session help you learn?</legend>
+        <div class="fbopts"><button type="button" data-v="Yes, a lot">Yes, a lot</button><button type="button" data-v="Yes, a bit">Yes, a bit</button><button type="button" data-v="Not really">Not really</button><button type="button" data-v="No">No</button></div></fieldset>
+      <fieldset class="fbq" data-key="engagement"><legend>How engaged did you feel during the class?</legend>
+        <div class="fbopts"><button type="button" data-v="Very engaged">Very engaged</button><button type="button" data-v="Fairly engaged">Fairly engaged</button><button type="button" data-v="A little">A little</button><button type="button" data-v="Not much">Not much</button></div></fieldset>
+      <fieldset class="fbq" data-key="pace"><legend>How was the pace for you?</legend>
+        <div class="fbopts"><button type="button" data-v="Too fast">Too fast</button><button type="button" data-v="About right">About right</button><button type="button" data-v="Too slow">Too slow</button></div></fieldset>
+      <button type="submit" class="btn fbsend" disabled>Submit</button>
+      <p class="fbmsg" hidden></p>
+    </form>
+    <div class="fbthanks" hidden>Thank you. Your answers have been sent.<span>Safe travels until next week.</span></div>
+  </div>
+</template>
+
 <script>
 (() => {
 "use strict";
@@ -1384,6 +1427,8 @@ const TASKS = {
  }
 };
 const BADGE_POS = {"screen": {"bx": 90, "by": -60}};
+const FEEDBACK_SESSION = "Session 3";
+const FEEDBACK = {sent:false};
 const SESSION_KEY = "session3";
 
 /* ---------------- data ---------------- */
@@ -1418,7 +1463,8 @@ const STOPS = [
   {id:"missing",t:"Missing is not zero",line:"navy",x:1640,y:1200,lp:"b"},
   {id:"compare",t:"Compare with limits",line:"navy",x:1880,y:1200,lp:"b"},
   {id:"log",t:"The AI-use log",line:"navy",x:2120,y:1200,lp:"b"},
-  {id:"exit",t:"Exit check",line:"navy",x:2360,y:1200,lp:"b"}
+  {id:"exit",t:"Exit check",line:"navy",x:2360,y:1200,lp:"b"},
+  {id:"feedback",t:"Feedback",line:"navy",x:2560,y:1200,lp:"b"}
 ];
 
 
@@ -1772,7 +1818,8 @@ const R = [
   [[1400,1200],[1640,1200]],
   [[1640,1200],[1880,1200]],
   [[1880,1200],[2120,1200]],
-  [[2120,1200],[2360,1200]]
+  [[2120,1200],[2360,1200]],
+  [[2360,1200],[2560,1200]]
 ];
 
 function routeBetween(a,b){
@@ -2001,6 +2048,46 @@ function wireWidgets(p, id){
     btn.addEventListener("click", () => { a.hidden = !a.hidden; btn.textContent = a.hidden ? (btn.dataset.l||btn.textContent) : "Hide"; });
     btn.dataset.l = btn.textContent;
   });
+
+  if(id==="feedback"){
+    const form = p.querySelector("#fbForm"), send = form.querySelector(".fbsend"), msg = form.querySelector(".fbmsg");
+    const answers = {};
+    form.querySelectorAll(".fbq").forEach(fs => {
+      const key = fs.dataset.key;
+      fs.querySelectorAll("button").forEach(b => {
+        b.setAttribute("aria-pressed","false");
+        b.addEventListener("click", () => {
+          fs.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x===b)));
+          answers[key] = b.dataset.v;
+          send.disabled = !(answers.learned && answers.engagement && answers.pace) || FEEDBACK.sent;
+        });
+      });
+    });
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      if(FEEDBACK.sent || !(answers.learned && answers.engagement && answers.pace)) return;
+      const url = window.FEEDBACK_URL;
+      msg.hidden = true;
+      if(!url || !/^https:\/\/script\.google(usercontent)?\.com\//.test(url)){
+        msg.textContent = "Feedback collection isn't switched on for this page yet. Please tell the lecturer.";
+        msg.hidden = false; return;
+      }
+      send.disabled = true; send.textContent = "Sending…";
+      let ok = true;
+      try {
+        await fetch(url, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body: JSON.stringify({ session: FEEDBACK_SESSION, learned: answers.learned, engagement: answers.engagement, pace: answers.pace }) });
+      } catch(err){ ok = false; }
+      if(ok){
+        FEEDBACK.sent = true;
+        form.hidden = true; p.querySelector(".fbthanks").hidden = false;
+      } else {
+        send.disabled = false; send.textContent = "Try again";
+        msg.textContent = "Could not send. Check your connection and try again.";
+        msg.hidden = false;
+      }
+    });
+  }
   if(id==="boolean"){
     const svg = p.querySelector(".venn"), cap = p.querySelector("#vcap");
     const caps = {and:"AND keeps 3 of the 11 records: only those that mention both concepts.", or:"OR keeps all 11, including strength papers with no recycled aggregate at all."};

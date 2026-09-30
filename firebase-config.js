@@ -9,3 +9,6 @@ window.FIREBASE_CONFIG = {
   projectId: "research-method-110ff",
   appId: "1:481349532348:web:67f763459f2cb0014c6eb9"
 };
+
+// End-of-session feedback: Apps Script web app that writes to the Google Sheet.
+window.FEEDBACK_URL = "https://script.google.com/macros/s/AKfycbwLilBr5QgITHv2uuhJ7pLVROW5zZwygXsPlsQFsVdHGr8MwofCENZgFjW8Er6dwTe2/exec";

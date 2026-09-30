@@ -133,6 +133,16 @@ The default is only a starting point; set the actual minutes in class with − a
 
 To add or change a task, edit the `TASKS` list near the top of the script in `session2.html` or `session3.html`: each entry has the stop id, default minutes, title, steps, an optional prompt, and what to record.
 
+## End-of-session feedback
+
+The last stop of each session is **Feedback**: three one-tap questions (learning, engagement, pace), anonymous, sent to your Google Sheet through an Apps Script web app. Set up the Apps Script as described in the feedback plan, then add one line at the end of `firebase-config.js` on GitHub:
+
+```js
+window.FEEDBACK_URL = "https://script.google.com/macros/s/…/exec";
+```
+
+Until that line is there, the questions still show, but **Submit** says feedback isn't switched on yet. Each row records the session ("Session 2" or "Session 3"), so one sheet collects both.
+
 ## Good to know
 
 - **Capacity:** Firebase's free Spark plan allows up to 100 simultaneous connections. Each student's open page is one connection, so a class of 60 fits.
